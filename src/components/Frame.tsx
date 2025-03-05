@@ -75,10 +75,10 @@ function CanvasFrame({ context }: CanvasFrameProps) {
       }
     };
 
-    sdk.on('FRAME_CLICK', interactionHandler);
+    sdk.on('click', interactionHandler);
 
     return () => {
-      sdk.off('FRAME_CLICK', interactionHandler);
+      sdk.off('click', interactionHandler);
     };
   }, [context]);
 
