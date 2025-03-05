@@ -22,6 +22,18 @@ export type QuizState = {
   responseTimes: number[];
 };
 
+// Local storage middleware for Zustand
+export const persistStorage = {
+  getItem: (name: string) => {
+    const value = localStorage.getItem(name);
+    return value ? JSON.parse(value) : null;
+  },
+  setItem: (name: string, value: any) => {
+    localStorage.setItem(name, JSON.stringify(value));
+  },
+  removeItem: (name: string) => localStorage.removeItem(name),
+};
+
 export type Question = {
   latex: string;
   answer: string;
