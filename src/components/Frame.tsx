@@ -51,10 +51,12 @@ function CanvasFrame({ context }: CanvasFrameProps) {
 
     // Setup canvas dimensions based on device
     const pixelRatio = window.devicePixelRatio || 1;
-    canvas.width = context.client.width * pixelRatio;
-    canvas.height = context.client.height * pixelRatio;
-    canvas.style.width = `${context.client.width}px`;
-    canvas.style.height = `${context.client.height}px`;
+    const width = window.innerWidth;
+    const height = window.innerHeight;
+    canvas.width = width * pixelRatio;
+    canvas.height = height * pixelRatio;
+    canvas.style.width = `${width}px`;
+    canvas.style.height = `${height}px`;
 
     const ctx = canvas.getContext('2d');
     if (!ctx) return;
