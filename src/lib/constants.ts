@@ -15,6 +15,26 @@ export const generateSessionToken = async (input: string): Promise<string> => {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 };
 
+export const verifyNonce = async (input: string, storedNonce: string): Promise<boolean> => {
+  if (!crypto.subtle) return false;
+  
+  try {
+    // Recreate the hash using original input + stored nonce
+    const encoder = new TextEncoder();
+    const data = encoder.encode(input + storedNonce);
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data);
+    
+    const computedNonce = Array.from(new Uint8Array(hashBuffer))
+      .map(b => b.toString(16).padStart(2, '0'))
+      .join('');
+      
+    return computedNonce === storedNonce;
+  } catch (error) {
+    console.error('Nonce verification failed:', error);
+    return false;
+  }
+};
+
 export type QuizState = {
   sessionToken: string;
   score: number;
