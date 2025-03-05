@@ -67,26 +67,18 @@ function CanvasFrame({ context }: CanvasFrameProps) {
     ctx.fillRect(0, 0, width, height);
     
     // Add touch/click handler
-    const handleInteraction = (e: MouseEvent | TouchEvent) => {
-      const rect = canvas.getBoundingClientRect();
-      const x = (e instanceof TouchEvent ? e.touches[0].clientX : e.clientX) - rect.left;
-      const y = (e instanceof TouchEvent ? e.touches[0].clientY : e.clientY) - rect.top;
-      
-      // Send interaction to frame handler
-      sdk.send({
-        type: 'CLICK',
-        x,
-        y,
-        timestamp: Date.now()
-      });
+    // Setup frame interaction handler
+    const interactionHandler = (event: any) => {
+      if (event.type === 'CLICK') {
+        console.log('Frame click at:', event.x, event.y);
+        // Handle click coordinates here
+      }
     };
 
-    canvas.addEventListener('click', handleInteraction);
-    canvas.addEventListener('touchstart', handleInteraction);
+    sdk.on('CLICK', interactionHandler);
 
     return () => {
-      canvas.removeEventListener('click', handleInteraction);
-      canvas.removeEventListener('touchstart', handleInteraction);
+      sdk.off('CLICK', interactionHandler);
     };
   }, [context]);
 
