@@ -80,8 +80,8 @@ export const recordResponseTime = (state: QuizState) => {
 };
 
 export const generateQuestion = (difficulty: number): Question => {
-  // Calculate stage progression from 2 to 6 based on correct answers
-  const stage = Math.min(Math.floor(difficulty / 3) + 2, 6);
+  // Calculate linear progression from 2 to 6 based on correct answers
+  const stage = Math.min(difficulty + 2, 6);
   
   // Alternate question types with increasing complexity
   return difficulty % 2 === 0

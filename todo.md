@@ -17,7 +17,7 @@ Here's the dependency-ordered implementation checklist:
 
 ### Question Engine
 - [x] Create lim/integral equation generator function (Question Core)
-- [ ] Implement difficulty scaling (n=2 to n=6 progression) (Algorithm)
+- [x] Implement difficulty scaling (n=2 to n=6 progression) (Algorithm)
 - [ ] Build answer shuffler with fixed correct position (Randomization)
 - [ ] Setup Web Worker for background generation (Performance)
 - [ ] Add LRU cache for pre-generated questions (Optimization)
