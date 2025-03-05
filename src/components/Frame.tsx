@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useCallback, useState, useRef } from "react";
+import * as THREE from 'three';
 import sdk, {
   AddFrame,
   SignIn as SignInCore,
