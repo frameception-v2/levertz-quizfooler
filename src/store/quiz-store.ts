@@ -23,14 +23,22 @@ export const useQuizStore = create<QuizState>()(
       nonce: '',
       
       initializeSession: async () => {
-        const token = crypto.randomUUID();
+        // Combine multiple entropy sources for session token
+        const entropy = `${performance.now()}-${Math.random()}-${navigator.userAgent}`;
+        const token = await crypto.subtle.digest(
+          'SHA-256',
+          new TextEncoder().encode(entropy)
+        ).then(buf => Array.from(new Uint8Array(buf))
+          .map(b => b.toString(16).padStart(2, '0')).join(''));
+
         const nonce = await get().generateNonce();
+        
         set({ 
           sessionToken: token,
           nonce,
           score: 0,
           currentStage: 1,
-          lastResponseTime: 0
+          lastResponseTime: Date.now() // Initialize with current time
         });
       },
 
