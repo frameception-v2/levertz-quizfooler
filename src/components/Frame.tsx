@@ -38,28 +38,92 @@ function ExampleCard() {
   );
 }
 
+type CanvasFrameProps = {
+  context?: Context.FrameContext;
+};
+
+function CanvasFrame({ context }: CanvasFrameProps) {
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !context) return;
+
+    // Setup canvas dimensions based on device
+    const pixelRatio = window.devicePixelRatio || 1;
+    canvas.width = context.client.width * pixelRatio;
+    canvas.height = context.client.height * pixelRatio;
+    canvas.style.width = `${context.client.width}px`;
+    canvas.style.height = `${context.client.height}px`;
+
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Initial frame rendering
+    ctx.scale(pixelRatio, pixelRatio);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, context.client.width, context.client.height);
+    
+    // Add touch/click handler
+    const handleInteraction = (e: MouseEvent | TouchEvent) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = (e instanceof TouchEvent ? e.touches[0].clientX : e.clientX) - rect.left;
+      const y = (e instanceof TouchEvent ? e.touches[0].clientY : e.clientY) - rect.top;
+      
+      // Send interaction to frame handler
+      sdk.interactions.send({
+        type: 'CLICK',
+        x,
+        y,
+        timestamp: Date.now()
+      });
+    };
+
+    canvas.addEventListener('click', handleInteraction);
+    canvas.addEventListener('touchstart', handleInteraction);
+
+    return () => {
+      canvas.removeEventListener('click', handleInteraction);
+      canvas.removeEventListener('touchstart', handleInteraction);
+    };
+  }, [context]);
+
+  return <canvas ref={canvasRef} />;
+}
+
 export default function Frame() {
   const [isSDKLoaded, setIsSDKLoaded] = useState(false);
   const [context, setContext] = useState<Context.FrameContext>();
 
-  const [added, setAdded] = useState(false);
+  // Frame v2 initialization
+  useEffect(() => {
+    const initFrame = async () => {
+      try {
+        await sdk.ready({
+          version: 'v2',
+          supportedHandlers: ['CLICK', 'GESTURE', 'INPUT'],
+          canvasOptions: {
+            preserveDrawingBuffer: true
+          }
+        });
+        
+        const context = await sdk.getContext();
+        setContext(context);
+        setIsSDKLoaded(true);
 
-  const [addFrameResult, setAddFrameResult] = useState("");
+        // Handle frame updates
+        sdk.onFrameUpdate((frameData) => {
+          // Update canvas based on frame data
+          console.log('Frame update:', frameData);
+        });
 
-  const addFrame = useCallback(async () => {
-    try {
-      await sdk.actions.addFrame();
-    } catch (error) {
-      if (error instanceof AddFrame.RejectedByUser) {
-        setAddFrameResult(`Not added: ${error.message}`);
+      } catch (error) {
+        console.error('Frame initialization failed:', error);
       }
+    };
 
-      if (error instanceof AddFrame.InvalidDomainManifest) {
-        setAddFrameResult(`Not added: ${error.message}`);
-      }
-
-      setAddFrameResult(`Error: ${error}`);
-    }
+    initFrame();
+    return () => sdk.destroy();
   }, []);
 
   useEffect(() => {
@@ -128,17 +192,13 @@ export default function Frame() {
   }
 
   return (
-    <div
-      style={{
-        paddingTop: context?.client.safeAreaInsets?.top ?? 0,
-        paddingBottom: context?.client.safeAreaInsets?.bottom ?? 0,
-        paddingLeft: context?.client.safeAreaInsets?.left ?? 0,
-        paddingRight: context?.client.safeAreaInsets?.right ?? 0,
-      }}
-    >
-      <div className="w-[300px] mx-auto py-2 px-2">
-        <ExampleCard />
-      </div>
+    <div style={{
+      paddingTop: context?.client.safeAreaInsets?.top ?? 0,
+      paddingBottom: context?.client.safeAreaInsets?.bottom ?? 0,
+      paddingLeft: context?.client.safeAreaInsets?.left ?? 0,
+      paddingRight: context?.client.safeAreaInsets?.right ?? 0,
+    }}>
+      <CanvasFrame context={context} />
     </div>
   );
 }

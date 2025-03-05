@@ -4,7 +4,7 @@ Here's the dependency-ordered implementation checklist:
 ### Core Infrastructure
 - [ ] Create Next.js 14+ TS project with `app` router structure (Base Project)
 - [x] Configure Zustand store with `QuizState` TS interface (State Management)
-- [ ] Implement Frame SDK v2 basic frame handler (Frame Integration)
+- [x] Implement Frame SDK v2 basic frame handler (Frame Integration)
 - [ ] Setup CSS Grid layout with mobile-first media queries (Layout)
 - [ ] Create crypto.subtle session token generation utility (Security)
 
