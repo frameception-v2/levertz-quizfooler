@@ -58,6 +58,7 @@ export type Question = {
   latex: string;
   answer: string;
   difficulty: number;
+  options: string[]; // Added shuffled options array
 };
 
 const RESPONSE_THROTTLE = 1000; // Minimum 1 second between answers
@@ -69,6 +70,18 @@ const validateResponseTiming = (lastResponseTime: number) => {
     throw new Error('Too many responses too quickly');
   }
   return now;
+};
+
+// Always keep correct answer in position 1 (second option) with others randomized
+const shuffleAnswers = (correctAnswer: string, wrongAnswers: string[]): string[] => {
+  const shuffled = [...wrongAnswers]
+    .map(value => ({ value, sort: Math.random() }))
+    .sort((a, b) => a.sort - b.sort)
+    .map(({ value }) => value);
+
+  // Insert correct answer at position 1
+  shuffled.splice(1, 0, correctAnswer);
+  return shuffled;
 };
 
 export const recordResponseTime = (state: QuizState) => {
@@ -91,18 +104,34 @@ export const generateQuestion = (difficulty: number): Question => {
 
 const generateLimitQuestion = (n: number): Question => {
   const equation = `\\lim\\limits_{x \\to ${n}} \\frac{x^2 - ${n**2}}{x - ${n}}`;
+  const correctAnswer = (2 * n).toString();
+  const wrongAnswers = [
+    (n ** 2).toString(), // Common mistake of squaring instead of simplifying
+    (2 * n + Math.floor(Math.random() * 3) + 1).toString(), // Offset by random 1-3
+    n.toString() // Simple value
+  ];
+  
   return {
     latex: equation,
-    answer: (2 * n).toString(),
-    difficulty: n
+    answer: correctAnswer,
+    difficulty: n,
+    options: shuffleAnswers(correctAnswer, wrongAnswers)
   };
 };
 
 const generateIntegralQuestion = (n: number): Question => {
   const equation = `\\int_{0}^{${n}} x^2 dx`;
+  const correctAnswer = ((n**3)/3).toString();
+  const wrongAnswers = [
+    (n**3).toString(), // Forgot to divide
+    ((n**2)/2).toString(), // Wrong exponent/power
+    ((n**3)/3.1415).toFixed(2) // Pi confusion
+  ];
+  
   return {
     latex: equation,
-    answer: ((n**3)/3).toString(),
-    difficulty: n
+    answer: correctAnswer,
+    difficulty: n,
+    options: shuffleAnswers(correctAnswer, wrongAnswers)
   };
 };
