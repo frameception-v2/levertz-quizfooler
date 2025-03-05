@@ -49,36 +49,87 @@ function CanvasFrame({ context }: CanvasFrameProps) {
     const canvas = canvasRef.current;
     if (!canvas || !context) return;
 
-    // Setup canvas dimensions based on device
-    const pixelRatio = window.devicePixelRatio || 1;
+    // Three.js scene setup
+    const renderer = new THREE.WebGLRenderer({ 
+      canvas,
+      antialias: true,
+      preserveDrawingBuffer: true
+    });
+    
+    // Responsive scene setup
     const width = window.innerWidth;
     const height = window.innerHeight;
-    canvas.width = width * pixelRatio;
-    canvas.height = height * pixelRatio;
-    canvas.style.width = `${width}px`;
-    canvas.style.height = `${height}px`;
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(75, width / height, 0.1, 1000);
+    camera.position.z = 5;
 
-    const ctx = canvas.getContext('2d');
-    if (!ctx) return;
-
-    // Initial frame rendering
-    ctx.scale(pixelRatio, pixelRatio);
-    ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, width, height);
+    // Basic particle system for initial effect
+    const particles = new THREE.BufferGeometry();
+    const particleCount = 1000;
+    const posArray = new Float32Array(particleCount * 3);
     
-    // Add touch/click handler
-    // Setup frame interaction handler
-    const interactionHandler = (event: any) => {
-      if (event.type === 'FRAME_CLICK') {
-        console.log('Frame click at:', event.x, event.y);
-        // Handle click coordinates here
-      }
+    for(let i = 0; i < particleCount * 3; i++) {
+      posArray[i] = (Math.random() - 0.5) * 5;
+    }
+    
+    particles.setAttribute('position', new THREE.BufferAttribute(posArray, 3));
+    const material = new THREE.PointsMaterial({
+      size: 0.005,
+      color: 0xffffff
+    });
+    
+    const points = new THREE.Points(particles, material);
+    scene.add(points);
+
+    // Animation loop
+    let frameId: number;
+    const animate = () => {
+      frameId = requestAnimationFrame(animate);
+      points.rotation.y += 0.001;
+      renderer.render(scene, camera);
+    };
+    animate();
+
+    // Responsive handler
+    const resizeHandler = () => {
+      const newWidth = window.innerWidth;
+      const newHeight = window.innerHeight;
+      
+      camera.aspect = newWidth / newHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(newWidth, newHeight);
+    };
+    
+    window.addEventListener('resize', resizeHandler);
+
+    // Frame interaction handler
+    const interactionHandler = ({ x, y }: { x: number; y: number }) => {
+      // Convert screen coords to WebGL normalized device coords
+      const ndcX = (x / width) * 2 - 1;
+      const ndcY = -(y / height) * 2 + 1;
+      sdk.emit('FRAME_CLICK', { x: ndcX, y: ndcY });
     };
 
-    sdk.on('click', interactionHandler);
+    // Mobile-friendly events
+    canvas.addEventListener('click', (e) => interactionHandler({ 
+      x: e.clientX, 
+      y: e.clientY 
+    }));
+    
+    canvas.addEventListener('touchstart', (e) => {
+      interactionHandler({ 
+        x: e.touches[0].clientX, 
+        y: e.touches[0].clientY 
+      });
+    });
 
     return () => {
-      sdk.off('click', interactionHandler);
+      window.removeEventListener('resize', resizeHandler);
+      cancelAnimationFrame(frameId);
+      renderer.dispose();
+      scene.remove(points);
+      particles.dispose();
+      material.dispose();
     };
   }, [context]);
 

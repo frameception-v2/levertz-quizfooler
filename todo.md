@@ -23,7 +23,7 @@ Here's the dependency-ordered implementation checklist:
 - [ ] Add LRU cache for pre-generated questions (Optimization)
 
 ### Rendering System
-- [ ] Initialize Three.js scene with responsive canvas (WebGL Core)
+- [x] Initialize Three.js scene with responsive canvas (WebGL Core)
 - [ ] Create particle system vertex/fragment shaders (Effects)
 - [ ] Implement viewport resize handler (Responsive)
 - [ ] Load equation symbol texture atlas (Assets)
