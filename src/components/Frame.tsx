@@ -75,10 +75,10 @@ function CanvasFrame({ context }: CanvasFrameProps) {
       }
     };
 
-    sdk.on('CLICK', interactionHandler);
+    sdk.on('click', interactionHandler);
 
     return () => {
-      sdk.off('CLICK', interactionHandler);
+      sdk.off('click', interactionHandler);
     };
   }, [context]);
 
@@ -95,7 +95,7 @@ export default function Frame() {
       try {
         await sdk.ready({
           version: 'v2',
-          supportedHandlers: ['CLICK', 'GESTURE', 'INPUT'],
+          supportedHandlers: ['click', 'GESTURE', 'INPUT'],
           canvasOptions: {
             preserveDrawingBuffer: true
           }
