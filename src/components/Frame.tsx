@@ -69,16 +69,16 @@ function CanvasFrame({ context }: CanvasFrameProps) {
     // Add touch/click handler
     // Setup frame interaction handler
     const interactionHandler = (event: any) => {
-      if (event.type === 'CLICK') {
+      if (event.type === 'FRAME_CLICK') {
         console.log('Frame click at:', event.x, event.y);
         // Handle click coordinates here
       }
     };
 
-    sdk.on('click', interactionHandler);
+    sdk.on('FRAME_CLICK', interactionHandler);
 
     return () => {
-      sdk.off('click', interactionHandler);
+      sdk.off('FRAME_CLICK', interactionHandler);
     };
   }, [context]);
 
