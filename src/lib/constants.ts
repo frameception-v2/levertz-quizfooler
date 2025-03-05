@@ -15,10 +15,36 @@ export const generateSessionToken = async (input: string): Promise<string> => {
   return hashArray.map(b => b.toString(16).padStart(2, '0')).join('');
 };
 
+export type QuizState = {
+  sessionToken: string;
+  score: number;
+  lastResponseTime: number;
+  responseTimes: number[];
+};
+
 export type Question = {
   latex: string;
   answer: string;
   difficulty: number;
+};
+
+const RESPONSE_THROTTLE = 1000; // Minimum 1 second between answers
+
+// Anti-spam throttle check
+const validateResponseTiming = (lastResponseTime: number) => {
+  const now = Date.now();
+  if (now - lastResponseTime < RESPONSE_THROTTLE) {
+    throw new Error('Too many responses too quickly');
+  }
+  return now;
+};
+
+export const recordResponseTime = (state: QuizState) => {
+  const now = validateResponseTiming(state.lastResponseTime);
+  return {
+    responseTimes: [...state.responseTimes, now],
+    lastResponseTime: now
+  };
 };
 
 export const generateQuestion = (difficulty: number): Question => {
