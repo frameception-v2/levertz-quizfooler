@@ -16,7 +16,7 @@ Here's the dependency-ordered implementation checklist:
 - [ ] Implement nonce verification wrapper (Security)
 
 ### Question Engine
-- [ ] Create lim/integral equation generator function (Question Core)
+- [x] Create lim/integral equation generator function (Question Core)
 - [ ] Implement difficulty scaling (n=2 to n=6 progression) (Algorithm)
 - [ ] Build answer shuffler with fixed correct position (Randomization)
 - [ ] Setup Web Worker for background generation (Performance)
