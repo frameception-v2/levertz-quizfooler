@@ -73,7 +73,7 @@ function CanvasFrame({ context }: CanvasFrameProps) {
       const y = (e instanceof TouchEvent ? e.touches[0].clientY : e.clientY) - rect.top;
       
       // Send interaction to frame handler
-      sdk.interactions.send({
+      sdk.actions.send({
         type: 'CLICK',
         x,
         y,
