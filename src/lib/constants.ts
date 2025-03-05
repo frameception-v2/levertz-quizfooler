@@ -22,10 +22,13 @@ export type Question = {
 };
 
 export const generateQuestion = (difficulty: number): Question => {
-  // Alternate between limit and integral questions
-  return difficulty % 2 === 0 
-    ? generateLimitQuestion(difficulty)
-    : generateIntegralQuestion(difficulty);
+  // Calculate stage progression from 2 to 6 based on correct answers
+  const stage = Math.min(Math.floor(difficulty / 3) + 2, 6);
+  
+  // Alternate question types with increasing complexity
+  return difficulty % 2 === 0
+    ? generateLimitQuestion(stage)
+    : generateIntegralQuestion(stage);
 };
 
 const generateLimitQuestion = (n: number): Question => {
