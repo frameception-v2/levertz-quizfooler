@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import { PROJECT_ID, persistStorage } from '~/lib/constants';
 
 interface QuizState {
   score: number;
@@ -67,11 +68,14 @@ export const useQuizStore = create<QuizState>()(
       }
     }),
     {
-      name: 'quiz-storage',
-      partialize: (state) => ({ 
+      name: PROJECT_ID,
+      storage: createJSONStorage(() => persistStorage),
+      partialize: (state) => ({
         sessionToken: state.sessionToken,
         score: state.score,
-        currentStage: state.currentStage 
+        currentStage: state.currentStage,
+        lastResponseTime: state.lastResponseTime,
+        responseTimes: state.responseTimes
       }),
     }
   )
