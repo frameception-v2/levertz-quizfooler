@@ -64,7 +64,7 @@ function CanvasFrame({ context }: CanvasFrameProps) {
     // Initial frame rendering
     ctx.scale(pixelRatio, pixelRatio);
     ctx.fillStyle = '#ffffff';
-    ctx.fillRect(0, 0, context.client.width, context.client.height);
+    ctx.fillRect(0, 0, width, height);
     
     // Add touch/click handler
     const handleInteraction = (e: MouseEvent | TouchEvent) => {
