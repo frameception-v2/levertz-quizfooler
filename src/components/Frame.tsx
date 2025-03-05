@@ -192,13 +192,21 @@ export default function Frame() {
   }
 
   return (
-    <div style={{
-      paddingTop: context?.client.safeAreaInsets?.top ?? 0,
-      paddingBottom: context?.client.safeAreaInsets?.bottom ?? 0,
-      paddingLeft: context?.client.safeAreaInsets?.left ?? 0,
-      paddingRight: context?.client.safeAreaInsets?.right ?? 0,
-    }}>
+    <div 
+      style={{
+        paddingTop: context?.client.safeAreaInsets?.top ?? 0,
+        paddingBottom: context?.client.safeAreaInsets?.bottom ?? 0,
+        paddingLeft: context?.client.safeAreaInsets?.left ?? 0,
+        paddingRight: context?.client.safeAreaInsets?.right ?? 0,
+      }}
+      className="flex flex-col h-full gap-4"
+    >
       <CanvasFrame context={context} />
+      <div className="grid grid-cols-1 gap-4 md:grid-cols-2 px-4 pb-4">
+        {/* Option slots will be added here */}
+        <div className="h-48 bg-neutral-100/50 rounded-xl backdrop-blur-sm"></div>
+        <div className="h-48 bg-neutral-100/50 rounded-xl backdrop-blur-sm"></div>
+      </div>
     </div>
   );
 }
