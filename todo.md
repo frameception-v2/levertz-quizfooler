@@ -6,7 +6,7 @@ Here's the dependency-ordered implementation checklist:
 - [x] Configure Zustand store with `QuizState` TS interface (State Management)
 - [x] Implement Frame SDK v2 basic frame handler (Frame Integration)
 - [x] Setup CSS Grid layout with mobile-first media queries (Layout)
-- [ ] Create crypto.subtle session token generation utility (Security)
+- [x] Create crypto.subtle session token generation utility (Security)
 
 ### State System
 - [ ] Add `initializeSession` action with nonce generation (State Management)
